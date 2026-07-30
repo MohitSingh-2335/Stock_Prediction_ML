@@ -88,9 +88,18 @@ def train_and_save_models(data_path, models_dir="models"):
     y2_train, y2_test = y2.iloc[:split_idx_2], y2.iloc[split_idx_2:]
 
     print("Training SVC for movement prediction...")
+    # Cap SVC training data at the most recent 15,000 rows — same convention
+    # used in find_best_models.py / compare_models_backtest.py / significance_test.py
+    # (see phase_1.md). Full ~28k-row rbf-kernel RandomizedSearchCV takes hours;
+    # this keeps training time reasonable without changing the chronological
+    # holdout used for evaluation.
+    SVC_TRAIN_CAP = 15000
+    X2_train_capped = X2_train.iloc[-SVC_TRAIN_CAP:]
+    y2_train_capped = y2_train.iloc[-SVC_TRAIN_CAP:]
+
     # Scale the features for SVC
     scaler = StandardScaler()
-    X2_train_scaled = scaler.fit_transform(X2_train)
+    X2_train_scaled = scaler.fit_transform(X2_train_capped)
     X2_test_scaled = scaler.transform(X2_test)  # use train-fit scaler, don't refit on test
 
     # Define parameter grid for RandomizedSearch based on your notebook
@@ -109,7 +118,7 @@ def train_and_save_models(data_path, models_dir="models"):
         n_jobs=-1,
         random_state=42
     )
-    random_search.fit(X2_train_scaled, y2_train)
+    random_search.fit(X2_train_scaled, y2_train_capped)
     
     best_svc = random_search.best_estimator_
 
@@ -124,7 +133,7 @@ def train_and_save_models(data_path, models_dir="models"):
 
     # --- Naive baseline: always predict whichever class was most common in TRAINING data ---
     # (using training distribution, not test, so the baseline itself doesn't peek at test labels)
-    majority_class = y2_train.mode()[0]
+    majority_class = y2_train_capped.mode()[0]
     baseline_preds = pd.Series(majority_class, index=y2_test.index)
     baseline_acc = accuracy_score(y2_test, baseline_preds)
     print(f"📊 Naive Baseline (always predict '{majority_class}') — Test Accuracy: {baseline_acc:.4f}")
