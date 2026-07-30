@@ -102,6 +102,12 @@ def create_features(df):
     if 'onchain_miners_revenue_usd' in df.columns:
         df['onchain_miners_revenue_change'] = df['onchain_miners_revenue_usd'].pct_change()
 
+    # Sentiment — daily FinBERT score broadcast from merge_sentiment().
+    # Same daily-into-hourly granularity caveat as fng_value/onchain applies.
+    if 'sentiment_score' in df.columns:
+        df['sentiment_mean_3d'] = df['sentiment_score'].rolling(window=72).mean()
+
+
     # Drop rows with NaN values created by feature engineering
     df.dropna(inplace=True)
 
