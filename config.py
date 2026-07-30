@@ -44,7 +44,8 @@ XGB_FEATURES = [
     'close_lag_1',  # price-level anchor — was missing, caused RMSE worse than naive baseline
     'taker_buy_ratio', 'taker_buy_ratio_mean_6h', 'trades_mean_6h',
     'fng_value', 'fng_mean_3d',
-    'onchain_num_tx_change', 'onchain_hash_rate_change', 'onchain_miners_revenue_change'
+    'onchain_num_tx_change', 'onchain_hash_rate_change', 'onchain_miners_revenue_change',
+    'sentiment_score', 'sentiment_mean_3d'
 ]
 
 #SVC features for direction prediction
@@ -63,7 +64,8 @@ SVC_FEATURES = [
     'hour_sin', 'hour_cos', 'day_sin', 'day_cos',
     'taker_buy_ratio', 'taker_buy_ratio_mean_6h', 'trades_mean_6h',
     'fng_value', 'fng_mean_3d',
-    'onchain_num_tx_change', 'onchain_hash_rate_change', 'onchain_miners_revenue_change'
+    'onchain_num_tx_change', 'onchain_hash_rate_change', 'onchain_miners_revenue_change',
+    'sentiment_score', 'sentiment_mean_3d'
 ]
 
 #App settings
